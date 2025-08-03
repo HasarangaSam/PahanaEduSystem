@@ -11,25 +11,23 @@ public class DBConnection {
 
     private static Connection connection;
 
-    // Database connection details
     private static final String URL = "jdbc:mysql://localhost:3306/pahanaedudb";
-    private static final String USERNAME = "root"; 
-    private static final String PASSWORD = "";     
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "";
 
-    // Private constructor prevents instantiation
     private DBConnection() {}
 
     /**
-     * Returns a single shared database connection instance.
+     * Returns a single, valid DB connection instance.
      */
-    public static Connection getConnection() {
-        if (connection == null) {
-            try {
+    public static synchronized Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            } catch (ClassNotFoundException | SQLException e) {
-                e.printStackTrace();
             }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return connection;
     }
