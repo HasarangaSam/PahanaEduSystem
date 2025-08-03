@@ -17,10 +17,10 @@ import java.util.List;
  * CustomerServlet - Handles add, edit, delete, and search operations for customers.
  */
 @WebServlet(urlPatterns = {
-    "/admin/customers",         // View/search customers
-    "/admin/add_customer",      // Add customer (POST)
-    "/admin/edit_customer",     // Edit customer (GET for form, POST for update)
-    "/admin/delete_customer"    // Delete customer (GET)
+    "/admin/customers", "/cashier/customers",             // View/search customers
+    "/admin/add_customer", "/cashier/add_customer",       // Add customer (POST)
+    "/admin/edit_customer", "/cashier/edit_customer",     // Edit customer (GET + POST)
+    "/admin/delete_customer", "/cashier/delete_customer"  // Delete customer (GET)
 })
 public class CustomerServlet extends HttpServlet {
 
@@ -36,45 +36,57 @@ public class CustomerServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String path = request.getServletPath();
+        String role = ((model.User) request.getSession().getAttribute("user")).getRole();
 
-        //View/Search customers
-        if ("/admin/customers".equals(path)) {
+        // ✅ View/Search customers
+        if (path.endsWith("/customers")) {
             String search = request.getParameter("search");
 
             List<Customer> customerList = (search != null && !search.trim().isEmpty())
-                ? customerDAO.searchCustomersByFirstName(search)
-                : customerDAO.getAllCustomers();
+                    ? customerDAO.searchCustomersByFirstName(search)
+                    : customerDAO.getAllCustomers();
 
             request.setAttribute("customers", customerList);
-            request.getRequestDispatcher("/admin/manage_customers.jsp").forward(request, response);
-        }
 
-        // 🟢 Show Edit Customer Form
-        else if ("/admin/edit_customer".equals(path)) {
-            try {
-                int id = Integer.parseInt(request.getParameter("id"));
-                Customer customer = customerDAO.getCustomerById(id);
-                if (customer != null) {
-                    request.setAttribute("customer", customer);
-                    request.getRequestDispatcher("/admin/edit_customer.jsp").forward(request, response);
-                } else {
-                    response.sendRedirect("customers?error=Customer+not+found");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendRedirect("customers?error=Invalid+customer+ID");
+            // ✅ Forward based on role
+            if ("cashier".equals(role)) {
+                request.getRequestDispatcher("/cashier/manage_customers.jsp").forward(request, response);
+            } else {
+                request.getRequestDispatcher("/admin/manage_customers.jsp").forward(request, response);
             }
         }
 
-        //Delete customer
-        else if ("/admin/delete_customer".equals(path)) {
+        // ✅ Show Edit Customer Form
+        else if (path.endsWith("/edit_customer")) {
+            try {
+                int id = Integer.parseInt(request.getParameter("id"));
+                Customer customer = customerDAO.getCustomerById(id);
+
+                if (customer != null) {
+                    request.setAttribute("customer", customer);
+                    if ("cashier".equals(role)) {
+                        request.getRequestDispatcher("/cashier/edit_customer.jsp").forward(request, response);
+                    } else {
+                        request.getRequestDispatcher("/admin/edit_customer.jsp").forward(request, response);
+                    }
+                } else {
+                    response.sendRedirect(getRedirectPath(role, "customers?error=Customer+not+found"));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect(getRedirectPath(role, "customers?error=Invalid+customer+ID"));
+            }
+        }
+
+        // ✅ Delete customer
+        else if (path.endsWith("/delete_customer")) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
                 customerDAO.deleteCustomer(id);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            response.sendRedirect("customers");
+            response.sendRedirect(getRedirectPath(role, "customers"));
         }
     }
 
@@ -83,33 +95,34 @@ public class CustomerServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String path = request.getServletPath();
+        String role = ((model.User) request.getSession().getAttribute("user")).getRole();
 
-        //Add Customer
-        if ("/admin/add_customer".equals(path)) {
+        // ✅ Add Customer
+        if (path.endsWith("/add_customer")) {
             Customer customer = extractCustomerFromRequest(request, false);
 
             if (customer != null) {
                 customerDAO.addCustomer(customer);
-                response.sendRedirect("customers");
+                response.sendRedirect(getRedirectPath(role, "customers"));
             } else {
-                response.sendRedirect("add_customer.jsp?error=Invalid+input");
+                response.sendRedirect(getRedirectPath(role, "add_customer.jsp?error=Invalid+input"));
             }
         }
 
-        //Update Customer
-        else if ("/admin/edit_customer".equals(path)) {
+        // ✅ Update Customer
+        else if (path.endsWith("/edit_customer")) {
             Customer customer = extractCustomerFromRequest(request, true);
 
             if (customer != null) {
                 customerDAO.updateCustomer(customer);
-                response.sendRedirect("customers");
+                response.sendRedirect(getRedirectPath(role, "customers"));
             } else {
-                response.sendRedirect("edit_customer?id=" + request.getParameter("id") + "&error=Invalid+input");
+                response.sendRedirect(getRedirectPath(role, "edit_customer?id=" + request.getParameter("id") + "&error=Invalid+input"));
             }
         }
     }
 
-    // Helper method to extract form input into Customer object
+    // ✅ Helper method to extract form input into Customer object
     private Customer extractCustomerFromRequest(HttpServletRequest request, boolean includeId) {
         try {
             String firstName = request.getParameter("first_name");
@@ -141,5 +154,10 @@ public class CustomerServlet extends HttpServlet {
             e.printStackTrace();
             return null;
         }
+    }
+
+    // ✅ Helper to redirect based on role
+    private String getRedirectPath(String role, String path) {
+        return ("cashier".equals(role) ? "customers" : path);
     }
 }
