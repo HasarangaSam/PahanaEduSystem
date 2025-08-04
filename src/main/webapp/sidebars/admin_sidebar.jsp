@@ -53,7 +53,7 @@
     <a href="../admin/dashboard.jsp">📊 Dashboard</a>
     <a href="users">👥 Manage Users</a>
     <a href="customers">📇 Manage Customers</a>
-    <a href="../admin/view_items.jsp">📚 View Inventory</a>
+    <a href="view_items">📚 View Inventory</a>
     <a href="../admin/view_bills.jsp">📈 Billing History</a>
     <a href="../common/help.jsp">❓ Help</a>
     <a href="../logout.jsp">🚪 Logout</a>

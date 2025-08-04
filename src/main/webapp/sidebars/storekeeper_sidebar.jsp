@@ -52,7 +52,7 @@
     <h4>📦 Pahana Edu</h4>
     <a href="../storekeeper/dashboard.jsp">📊 Dashboard</a>
     <a href="categories">🗂️ Manage Categories</a>
-    <a href="../storekeeper/manage_items.jsp">📦 Manage Items</a>
+    <a href="items">📦 Manage Items</a>
     <a href="../common/help.jsp">❓ Help</a>
     <a href="../logout.jsp">🚪 Logout</a>
 </div>

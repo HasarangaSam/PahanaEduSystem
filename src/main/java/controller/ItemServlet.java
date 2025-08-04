@@ -19,7 +19,8 @@ import java.util.List;
     "/storekeeper/add_item",       // Add item (GET form, POST add)
     "/storekeeper/edit_item",      // Edit item (GET form, POST update)
     "/storekeeper/delete_item",    // Delete item (GET)
-    "/storekeeper/update_stock"    // Update stock (GET form, POST update)
+    "/storekeeper/update_stock",    // Update stock (GET form, POST update)
+    "/admin/view_items"          // Admin view items
 })
 public class ItemServlet extends HttpServlet {
 
@@ -105,6 +106,11 @@ public class ItemServlet extends HttpServlet {
                 e.printStackTrace();
                 response.sendRedirect("items?error=Invalid+item+ID");
             }
+        }
+        else if ("/admin/view_items".equals(path)) {
+            List<Item> itemList = itemDAO.getAllItems();
+            request.setAttribute("items", itemList);
+            request.getRequestDispatcher("/admin/view_items.jsp").forward(request, response);
         }
     }
 
