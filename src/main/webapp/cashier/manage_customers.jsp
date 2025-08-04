@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     // Block unauthorized access
-    if (session == null || !"admin".equals(((model.User) session.getAttribute("user")).getRole())) {
+    if (session == null || !"cashier".equals(((model.User) session.getAttribute("user")).getRole())) {
         response.sendRedirect("../login.jsp?error=Unauthorized+access");
         return;
     }
 %>
-<%@ include file="../sidebars/admin_sidebar.jsp" %>
+<%@ include file="../sidebars/cashier_sidebar.jsp" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -50,10 +50,11 @@
 		        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 		    </div>
 		<% } %>
-		    <div class="d-flex justify-content-between align-items-center mb-4">
-		        <h2>📇 Manage Customers</h2>
-		        <a href="add_customer.jsp" class="btn btn-primary">➕ Add New Customer</a>
-		    </div>
+		    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📇 Manage Customers</h2>
+        <a href="add_customer.jsp" class="btn btn-primary">➕ Add New Customer</a>
+    </div>
 
     <!-- Search form with clear button -->
     <form class="d-flex mb-4" method="get" action="customers">

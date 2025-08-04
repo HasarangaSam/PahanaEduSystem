@@ -13,14 +13,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * CustomerServlet - Handles add, edit, delete, and search operations for customers.
- */
 @WebServlet(urlPatterns = {
-    "/admin/customers", "/cashier/customers",             // View/search customers
-    "/admin/add_customer", "/cashier/add_customer",       // Add customer (POST)
-    "/admin/edit_customer", "/cashier/edit_customer",     // Edit customer (GET + POST)
-    "/admin/delete_customer", "/cashier/delete_customer"  // Delete customer (GET)
+    "/admin/customers", "/cashier/customers",
+    "/admin/add_customer", "/cashier/add_customer",
+    "/admin/edit_customer", "/cashier/edit_customer",
+    "/admin/delete_customer", "/cashier/delete_customer"
 })
 public class CustomerServlet extends HttpServlet {
 
@@ -36,9 +33,15 @@ public class CustomerServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String path = request.getServletPath();
-        String role = ((model.User) request.getSession().getAttribute("user")).getRole();
+        model.User user = (model.User) request.getSession().getAttribute("user");
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp?error=Session+expired");
+            return;
+        }
 
-        //View/Search customers
+        String role = user.getRole();
+
+        // View/Search customers
         if (path.endsWith("/customers")) {
             String search = request.getParameter("search");
 
@@ -48,7 +51,6 @@ public class CustomerServlet extends HttpServlet {
 
             request.setAttribute("customers", customerList);
 
-            // Forward based on role
             if ("cashier".equals(role)) {
                 request.getRequestDispatcher("/cashier/manage_customers.jsp").forward(request, response);
             } else {
@@ -70,11 +72,11 @@ public class CustomerServlet extends HttpServlet {
                         request.getRequestDispatcher("/admin/edit_customer.jsp").forward(request, response);
                     }
                 } else {
-                    response.sendRedirect(getRedirectPath(role, "customers?error=Customer+not+found"));
+                    response.sendRedirect(getRedirectPath(request, role, "customers?error=Customer+not+found"));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                response.sendRedirect(getRedirectPath(role, "customers?error=Invalid+customer+ID"));
+                response.sendRedirect(getRedirectPath(request, role, "customers?error=Invalid+customer+ID"));
             }
         }
 
@@ -86,7 +88,7 @@ public class CustomerServlet extends HttpServlet {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            response.sendRedirect(getRedirectPath(role, "customers"));
+            response.sendRedirect(getRedirectPath(request, role, "customers?msg=Customer+deleted"));
         }
     }
 
@@ -95,7 +97,13 @@ public class CustomerServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String path = request.getServletPath();
-        String role = ((model.User) request.getSession().getAttribute("user")).getRole();
+        model.User user = (model.User) request.getSession().getAttribute("user");
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp?error=Session+expired");
+            return;
+        }
+
+        String role = user.getRole();
 
         // Add Customer
         if (path.endsWith("/add_customer")) {
@@ -103,9 +111,9 @@ public class CustomerServlet extends HttpServlet {
 
             if (customer != null) {
                 customerDAO.addCustomer(customer);
-                response.sendRedirect(getRedirectPath(role, "customers"));
+                response.sendRedirect(getRedirectPath(request, role, "customers?msg=Customer+added+successfully"));
             } else {
-                response.sendRedirect(getRedirectPath(role, "add_customer.jsp?error=Invalid+input"));
+                response.sendRedirect(getRedirectPath(request, role, "add_customer.jsp?error=Invalid+input"));
             }
         }
 
@@ -115,14 +123,15 @@ public class CustomerServlet extends HttpServlet {
 
             if (customer != null) {
                 customerDAO.updateCustomer(customer);
-                response.sendRedirect(getRedirectPath(role, "customers"));
+                response.sendRedirect(getRedirectPath(request, role, "customers?msg=Customer+updated"));
             } else {
-                response.sendRedirect(getRedirectPath(role, "edit_customer?id=" + request.getParameter("id") + "&error=Invalid+input"));
+                String id = request.getParameter("id");
+                response.sendRedirect(getRedirectPath(request, role, "edit_customer?id=" + id + "&error=Invalid+input"));
             }
         }
     }
 
-    // Helper method to extract form input into Customer object
+    // Helper to extract form input
     private Customer extractCustomerFromRequest(HttpServletRequest request, boolean includeId) {
         try {
             String firstName = request.getParameter("first_name");
@@ -156,8 +165,9 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
-    // Helper to redirect based on role
-    private String getRedirectPath(String role, String path) {
-        return ("cashier".equals(role) ? "customers" : path);
+    // Helper to redirect based on role + contextPath
+    private String getRedirectPath(HttpServletRequest request, String role, String path) {
+        String base = role.equals("cashier") ? "/cashier/" : "/admin/";
+        return request.getContextPath() + base + path;
     }
 }
