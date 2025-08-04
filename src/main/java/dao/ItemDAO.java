@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ItemDAO {
 
-    // ✅ Add new item
+    // Add new item
     public void addItem(Item item) {
         String sql = "INSERT INTO items (category_id, name, brand, unit_price, stock_quantity) VALUES (?, ?, ?, ?, ?)";
 
@@ -32,7 +32,7 @@ public class ItemDAO {
         }
     }
 
-    // ✅ Get all items with category name
+    // Get all items with category name
     public List<Item> getAllItems() {
         List<Item> items = new ArrayList<>();
         String sql = "SELECT i.*, c.category_name FROM items i LEFT JOIN categories c ON i.category_id = c.category_id";
@@ -52,7 +52,7 @@ public class ItemDAO {
         return items;
     }
 
-    // ✅ Get item by ID with category name
+    // Get item by ID with category name
     public Item getItemById(int id) {
         String sql = "SELECT i.*, c.category_name FROM items i LEFT JOIN categories c ON i.category_id = c.category_id WHERE i.item_id = ?";
         Item item = null;
@@ -74,7 +74,7 @@ public class ItemDAO {
         return item;
     }
 
-    // ✅ Update item
+    // Update item
     public void updateItem(Item item) {
         String sql = "UPDATE items SET category_id=?, name=?, brand=?, unit_price=?, stock_quantity=? WHERE item_id=?";
 
@@ -110,7 +110,7 @@ public class ItemDAO {
         }
     }
 
-    // ✅ Search items by name (partial match) with category name
+    // Search items by name (partial match) with category name
     public List<Item> searchItemsByName(String name) {
         List<Item> items = new ArrayList<>();
         String sql = "SELECT i.*, c.category_name FROM items i LEFT JOIN categories c ON i.category_id = c.category_id WHERE i.name LIKE ?";
@@ -149,7 +149,7 @@ public class ItemDAO {
         }
     }
 
-    // ✅ Helper method to map ResultSet to Item object including category name
+    // Helper method to map ResultSet to Item object including category name
     private Item mapResultSetToItem(ResultSet rs) throws SQLException {
         Item item = new Item();
         item.setItemId(rs.getInt("item_id"));

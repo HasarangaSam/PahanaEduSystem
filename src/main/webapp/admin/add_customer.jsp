@@ -6,7 +6,6 @@
         return;
     }
 %>
-<%@ include file="../sidebars/admin_sidebar.jsp" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +34,7 @@
     </style>
 </head>
 <body>
-
+<%@ include file="../sidebars/admin_sidebar.jsp" %>
 <div class="main-content">
     <div class="form-container">
         <h3 class="mb-4 text-center">➕ Add New Customer</h3>

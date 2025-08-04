@@ -52,8 +52,8 @@
     <h4>🧾 Pahana Edu</h4>
     <a href="dashboard.jsp">🏠 Dashboard</a>
     <a href="customers">📇 Manage Customers</a>
-    <a href="add_bill.jsp">➕ New Bill</a>
-    <a href="bills">🧾 Billing History</a>
+    <a href="billing">➕ New Bill</a>
+    <a href="bill_history">🧾 Billing History</a>
     <a href="../common/help.jsp">❓ Help</a>
     <a href="../logout.jsp">🚪 Logout</a>
 </div>
