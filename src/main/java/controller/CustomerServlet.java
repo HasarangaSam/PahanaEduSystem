@@ -38,7 +38,7 @@ public class CustomerServlet extends HttpServlet {
         String path = request.getServletPath();
         String role = ((model.User) request.getSession().getAttribute("user")).getRole();
 
-        // ✅ View/Search customers
+        //View/Search customers
         if (path.endsWith("/customers")) {
             String search = request.getParameter("search");
 
@@ -48,7 +48,7 @@ public class CustomerServlet extends HttpServlet {
 
             request.setAttribute("customers", customerList);
 
-            // ✅ Forward based on role
+            // Forward based on role
             if ("cashier".equals(role)) {
                 request.getRequestDispatcher("/cashier/manage_customers.jsp").forward(request, response);
             } else {
@@ -56,7 +56,7 @@ public class CustomerServlet extends HttpServlet {
             }
         }
 
-        // ✅ Show Edit Customer Form
+        // Show Edit Customer Form
         else if (path.endsWith("/edit_customer")) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
@@ -78,7 +78,7 @@ public class CustomerServlet extends HttpServlet {
             }
         }
 
-        // ✅ Delete customer
+        // Delete customer
         else if (path.endsWith("/delete_customer")) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
@@ -97,7 +97,7 @@ public class CustomerServlet extends HttpServlet {
         String path = request.getServletPath();
         String role = ((model.User) request.getSession().getAttribute("user")).getRole();
 
-        // ✅ Add Customer
+        // Add Customer
         if (path.endsWith("/add_customer")) {
             Customer customer = extractCustomerFromRequest(request, false);
 
@@ -109,7 +109,7 @@ public class CustomerServlet extends HttpServlet {
             }
         }
 
-        // ✅ Update Customer
+        // Update Customer
         else if (path.endsWith("/edit_customer")) {
             Customer customer = extractCustomerFromRequest(request, true);
 
@@ -122,7 +122,7 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
-    // ✅ Helper method to extract form input into Customer object
+    // Helper method to extract form input into Customer object
     private Customer extractCustomerFromRequest(HttpServletRequest request, boolean includeId) {
         try {
             String firstName = request.getParameter("first_name");
@@ -156,7 +156,7 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
-    // ✅ Helper to redirect based on role
+    // Helper to redirect based on role
     private String getRedirectPath(String role, String path) {
         return ("cashier".equals(role) ? "customers" : path);
     }

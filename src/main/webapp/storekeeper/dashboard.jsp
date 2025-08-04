@@ -27,7 +27,7 @@
             left: 240px;
             width: calc(100% - 240px);
             height: 100vh;
-            background-color: rgba(30, 64, 175, 0.6); /* blue overlay */
+            background-color: rgba(30, 64, 175, 0.2); /* blue overlay */
             z-index: 1;
         }
 
