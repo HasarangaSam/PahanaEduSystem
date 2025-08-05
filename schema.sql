@@ -56,3 +56,28 @@ CREATE TABLE bill_items (
     FOREIGN KEY (bill_id) REFERENCES bills(bill_id) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE SET NULL
 );
+
+-- Add a dummy user (cashier)
+INSERT INTO users (username, password, role)
+VALUES ('cashier1', 'pass123', 'cashier');
+
+-- Add a dummy customer
+INSERT INTO customers (first_name, last_name, address, telephone, email)
+VALUES ('Test', 'Customer', '123 Main Street', '0700000000', 'test@example.com');
+
+-- Add a dummy category
+INSERT INTO categories (category_name)
+VALUES ('Stationery');
+
+-- Add a dummy item (linked to the category above)
+INSERT INTO items (category_id, name, brand, unit_price, stock_quantity)
+VALUES (1, 'Pen', 'Pilot', 120.00, 100);
+
+-- Add a dummy bill (linked to customer + user)
+INSERT INTO bills (customer_id, cashier_id, total_amount)
+VALUES (1, 1, 240.00);
+
+-- Add a dummy bill item (linked to bill + item)
+INSERT INTO bill_items (bill_id, item_id, quantity, unit_price, subtotal)
+VALUES (1, 1, 2, 120.00, 240.00);
+
