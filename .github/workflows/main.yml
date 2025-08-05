@@ -41,6 +41,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: 🏗️ Set up database tables
+      run: |
+        sleep 10
+        mysql -h 127.0.0.1 -u root -prootpass pahanaedudb < schema.sql
+
     - name: 🧩 Download required JARs
       run: |
         mkdir -p lib
