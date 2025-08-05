@@ -8,8 +8,28 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: pahanaedudb
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -ptestpass -utestuser"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DB_URL: jdbc:mysql://localhost:3306/pahanaedudb
+      DB_USERNAME: testuser
+      DB_PASSWORD: testpass
 
     steps:
     - name: 📥 Checkout code from GitHub
