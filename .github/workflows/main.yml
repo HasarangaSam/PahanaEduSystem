@@ -28,9 +28,19 @@ jobs:
         curl -L -o lib/itext-2.1.7.jar https://repo1.maven.org/maven2/com/lowagie/itext/2.1.7/itext-2.1.7.jar
         curl -L -o lib/jakarta.mail.jar https://repo1.maven.org/maven2/com/sun/mail/jakarta.mail/2.0.1/jakarta.mail-2.0.1.jar
         curl -L -o lib/jakarta.activation.jar https://repo1.maven.org/maven2/jakarta/activation/jakarta.activation-api/2.0.1/jakarta.activation-api-2.0.1.jar
+        curl -L -o lib/junit-4.12.jar https://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar
+        curl -L -o lib/hamcrest-core-2.2.jar https://repo1.maven.org/maven2/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar
 
-    - name: 🧪 Compile Java code
+    - name: 🧪 Compile all Java code (including tests)
       run: |
-        find src -name "*.java" > sources.txt
+        find src/main/java -name "*.java" > sources.txt
         mkdir -p out
         javac -cp "lib/*" -d out @sources.txt
+
+    - name: ✅ Run all JUnit tests in src/main/java
+      run: |
+        find out -name "*Test.class" | while read test_file; do
+          test_class=$(echo "$test_file" | sed 's|out/||;s|/|.|g;s|.class$||')
+          echo "🧪 Running test: $test_class"
+          java -cp "out:lib/*" org.junit.runner.JUnitCore "$test_class"
+        done
