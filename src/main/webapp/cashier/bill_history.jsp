@@ -3,15 +3,13 @@
 <%@ page import="model.Bill" %>
 
 <%
-    // Simple role check, assuming only cashier and admin can access
     if (session == null) {
         response.sendRedirect("../login.jsp?error=Unauthorized+access");
         return;
     }
 
-    // You can modify this role check as per your needs
     String role = (String) ((model.User) session.getAttribute("user")).getRole();
-    if (!"cashier".equals(role) && !"admin".equals(role)) {
+    if (!"cashier".equals(role)) {
         response.sendRedirect("../login.jsp?error=Unauthorized+access");
         return;
     }

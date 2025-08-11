@@ -13,6 +13,9 @@ public class BillItem {
 
     // Useful when displaying item name in bill details
     private String itemName;
+    
+ // Useful when displaying brand name in bill details
+    private String brandName;
 
     // Getters and Setters
 
@@ -70,5 +73,13 @@ public class BillItem {
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
+    }
+    
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
     }
 }

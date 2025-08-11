@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, model.Item" %>
+<%@ page import="java.util.List, model.Item, model.Category" %>
 
 <%
-    // Block unauthorized access - only storekeeper role allowed
     if (session == null || !"storekeeper".equals(((model.User) session.getAttribute("user")).getRole())) {
         response.sendRedirect("../login.jsp?error=Unauthorized+access");
         return;
@@ -22,12 +21,33 @@
 <div class="main-content p-4">
     <h2>📦 Manage Items</h2>
 
-    <!-- Search + Add New Button Section -->
+    <!-- Search + Category Filter + Add New Button -->
     <div class="row mb-3 align-items-center">
         <div class="col-md-8">
             <form action="items" method="get" class="d-flex gap-2">
                 <input type="text" name="search" class="form-control" placeholder="Search by item name"
                        value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>" />
+
+                <select name="categoryId" class="form-select" style="max-width: 200px;">
+                    <option value="">All Categories</option>
+                    <%
+                        List<Category> categories = (List<Category>) request.getAttribute("categories");
+                        String selectedCategoryId = request.getParameter("categoryId");
+
+                        if (categories != null) {
+                            for (Category category : categories) {
+                                String catIdStr = String.valueOf(category.getCategoryId());
+                                boolean selected = catIdStr.equals(selectedCategoryId);
+                    %>
+                        <option value="<%= catIdStr %>" <%= selected ? "selected" : "" %>>
+                            <%= category.getCategoryName() %>
+                        </option>
+                    <%
+                            }
+                        }
+                    %>
+                </select>
+
                 <button type="submit" class="btn btn-primary">Search</button>
                 <a href="items" class="btn btn-secondary">Clear</a>
             </form>
@@ -37,12 +57,26 @@
         </div>
     </div>
 
-    <!-- Optional: show search keyword -->
+    <!-- Show active search or filter -->
     <%
         String searchTerm = request.getParameter("search");
-        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+        if ((searchTerm != null && !searchTerm.trim().isEmpty()) || (selectedCategoryId != null && !selectedCategoryId.trim().isEmpty())) {
     %>
-        <p>Showing results for: "<strong><%= searchTerm %></strong>"</p>
+        <p>Showing results 
+            <%
+                if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            %> for keyword "<strong><%= searchTerm %></strong>"<% } %>
+            <%
+                if (selectedCategoryId != null && !selectedCategoryId.trim().isEmpty()) {
+                    for (Category category : categories) {
+                        if (String.valueOf(category.getCategoryId()).equals(selectedCategoryId)) {
+            %> in category "<strong><%= category.getCategoryName() %></strong>"<%
+                            break;
+                        }
+                    }
+                }
+            %>.
+        </p>
     <%
         }
     %>
@@ -62,9 +96,9 @@
         </thead>
         <tbody>
             <%
-                List<model.Item> items = (List<model.Item>) request.getAttribute("items");
+                List<Item> items = (List<Item>) request.getAttribute("items");
                 if (items != null && !items.isEmpty()) {
-                    for (model.Item item : items) {
+                    for (Item item : items) {
             %>
             <tr>
                 <td><%= item.getItemId() %></td>

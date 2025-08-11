@@ -5,7 +5,6 @@ import dao.CustomerDAO;
 import dao.ItemDAO;
 import model.Bill;
 import model.BillItem;
-import model.Customer;
 import model.Item;
 import model.User;
 
@@ -149,4 +148,4 @@ public class BillingServlet extends HttpServlet {
             }
         }
     }
-}
+} 

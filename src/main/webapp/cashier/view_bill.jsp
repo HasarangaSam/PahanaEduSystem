@@ -66,6 +66,7 @@
                 <tr>
                     <th>#</th>
                     <th>Item</th>
+                    <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit Price (Rs.)</th>
                     <th>Subtotal (Rs.)</th>
@@ -77,6 +78,7 @@
                     <tr>
                         <td><%= count++ %></td>
                         <td><%= item.getItemName() %></td>
+                        <td><%= item.getBrandName() %></td>
                         <td><%= item.getQuantity() %></td>
                         <td><%= String.format("%.2f", item.getUnitPrice()) %></td>
                         <td><%= String.format("%.2f", item.getSubtotal()) %></td>

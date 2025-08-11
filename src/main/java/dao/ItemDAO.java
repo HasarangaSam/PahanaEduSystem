@@ -7,9 +7,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ItemDAO - Handles database operations related to items.
- */
 public class ItemDAO {
 
     // Add new item
@@ -42,7 +39,19 @@ public class ItemDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                items.add(mapResultSetToItem(rs));
+                Item item = new Item();
+                item.setItemId(rs.getInt("item_id"));
+                item.setCategoryId(rs.getInt("category_id"));
+                item.setName(rs.getString("name"));
+                item.setBrand(rs.getString("brand"));
+                item.setUnitPrice(rs.getDouble("unit_price"));
+                item.setStockQuantity(rs.getInt("stock_quantity"));
+                try {
+                    item.setCategoryName(rs.getString("category_name"));
+                } catch (SQLException ignored) {
+                    item.setCategoryName(null);
+                }
+                items.add(item);
             }
 
         } catch (SQLException e) {
@@ -64,7 +73,18 @@ public class ItemDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                item = mapResultSetToItem(rs);
+                item = new Item();
+                item.setItemId(rs.getInt("item_id"));
+                item.setCategoryId(rs.getInt("category_id"));
+                item.setName(rs.getString("name"));
+                item.setBrand(rs.getString("brand"));
+                item.setUnitPrice(rs.getDouble("unit_price"));
+                item.setStockQuantity(rs.getInt("stock_quantity"));
+                try {
+                    item.setCategoryName(rs.getString("category_name"));
+                } catch (SQLException ignored) {
+                    item.setCategoryName(null);
+                }
             }
 
         } catch (SQLException e) {
@@ -95,7 +115,7 @@ public class ItemDAO {
         }
     }
 
-    // ✅ Delete item
+    // Delete item
     public void deleteItem(int id) {
         String sql = "DELETE FROM items WHERE item_id = ?";
 
@@ -122,7 +142,19 @@ public class ItemDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                items.add(mapResultSetToItem(rs));
+                Item item = new Item();
+                item.setItemId(rs.getInt("item_id"));
+                item.setCategoryId(rs.getInt("category_id"));
+                item.setName(rs.getString("name"));
+                item.setBrand(rs.getString("brand"));
+                item.setUnitPrice(rs.getDouble("unit_price"));
+                item.setStockQuantity(rs.getInt("stock_quantity"));
+                try {
+                    item.setCategoryName(rs.getString("category_name"));
+                } catch (SQLException ignored) {
+                    item.setCategoryName(null);
+                }
+                items.add(item);
             }
 
         } catch (SQLException e) {
@@ -132,7 +164,76 @@ public class ItemDAO {
         return items;
     }
 
-    // ✅ Update stock only
+    // Search by name and category
+    public List<Item> searchItemsByNameAndCategory(String name, int categoryId) {
+        List<Item> items = new ArrayList<>();
+        String sql = "SELECT i.*, c.category_name FROM items i LEFT JOIN categories c ON i.category_id = c.category_id WHERE i.name LIKE ? AND i.category_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + name + "%");
+            stmt.setInt(2, categoryId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Item item = new Item();
+                item.setItemId(rs.getInt("item_id"));
+                item.setCategoryId(rs.getInt("category_id"));
+                item.setName(rs.getString("name"));
+                item.setBrand(rs.getString("brand"));
+                item.setUnitPrice(rs.getDouble("unit_price"));
+                item.setStockQuantity(rs.getInt("stock_quantity"));
+                try {
+                    item.setCategoryName(rs.getString("category_name"));
+                } catch (SQLException ignored) {
+                    item.setCategoryName(null);
+                }
+                items.add(item);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return items;
+    }
+
+    // Get items by category only
+    public List<Item> getItemsByCategory(int categoryId) {
+        List<Item> items = new ArrayList<>();
+        String sql = "SELECT i.*, c.category_name FROM items i LEFT JOIN categories c ON i.category_id = c.category_id WHERE i.category_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, categoryId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Item item = new Item();
+                item.setItemId(rs.getInt("item_id"));
+                item.setCategoryId(rs.getInt("category_id"));
+                item.setName(rs.getString("name"));
+                item.setBrand(rs.getString("brand"));
+                item.setUnitPrice(rs.getDouble("unit_price"));
+                item.setStockQuantity(rs.getInt("stock_quantity"));
+                try {
+                    item.setCategoryName(rs.getString("category_name"));
+                } catch (SQLException ignored) {
+                    item.setCategoryName(null);
+                }
+                items.add(item);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return items;
+    }
+
+    // Update stock only
     public void updateStock(int itemId, int newStockQuantity) {
         String sql = "UPDATE items SET stock_quantity = ? WHERE item_id = ?";
 
@@ -147,22 +248,5 @@ public class ItemDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    // Helper method to map ResultSet to Item object including category name
-    private Item mapResultSetToItem(ResultSet rs) throws SQLException {
-        Item item = new Item();
-        item.setItemId(rs.getInt("item_id"));
-        item.setCategoryId(rs.getInt("category_id"));
-        item.setName(rs.getString("name"));
-        item.setBrand(rs.getString("brand"));
-        item.setUnitPrice(rs.getDouble("unit_price"));
-        item.setStockQuantity(rs.getInt("stock_quantity"));
-        try {
-            item.setCategoryName(rs.getString("category_name")); // only present in JOINs
-        } catch (SQLException ignored) {
-            item.setCategoryName(null); // fallback if not joined
-        }
-        return item;
     }
 }

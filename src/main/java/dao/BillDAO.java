@@ -143,10 +143,10 @@ public class BillDAO {
     public List<BillItem> getBillItemsByBillId(int billId) {
         List<BillItem> items = new ArrayList<>();
         String sql = """
-                SELECT bi.*, i.name AS item_name
-                FROM bill_items bi
-                LEFT JOIN items i ON bi.item_id = i.item_id
-                WHERE bi.bill_id = ?
+                SELECT bi.*, i.name AS item_name, i.brand AS brand_name
+				FROM bill_items bi
+				JOIN items i ON bi.item_id = i.item_id
+				WHERE bi.bill_id = ?
                 """;
 
         try (Connection conn = DBConnection.getConnection();
@@ -164,6 +164,7 @@ public class BillDAO {
                 item.setUnitPrice(rs.getDouble("unit_price"));
                 item.setSubtotal(rs.getDouble("subtotal"));
                 item.setItemName(rs.getString("item_name"));
+                item.setBrandName(rs.getString("brand_name"));
 
                 items.add(item);
             }

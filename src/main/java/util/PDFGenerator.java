@@ -61,13 +61,13 @@ public class PDFGenerator {
             document.add(new Paragraph("Purchased Items", labelFont));
             document.add(new Paragraph(" "));
 
-            PdfPTable table = new PdfPTable(4);
+            PdfPTable table = new PdfPTable(5);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{4f, 1f, 2f, 2f});
+            table.setWidths(new float[]{3f, 2f, 1f, 2f, 2f});
             table.setSpacingBefore(10f);
 
             // Table Header
-            String[] headers = {"Item", "Qty", "Unit Price (Rs.)", "Subtotal (Rs.)"};
+            String[] headers = {"Item", "Brand", "Qty", "Unit Price (Rs.)", "Subtotal (Rs.)"};
             for (String header : headers) {
                 PdfPCell cell = new PdfPCell(new Phrase(header, tableHeaderFont));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -78,6 +78,7 @@ public class PDFGenerator {
             // Table Rows
             for (BillItem item : items) {
                 table.addCell(new Phrase(item.getItemName(), normalFont));
+                table.addCell(new Phrase(item.getBrandName(), normalFont));
                 table.addCell(new Phrase(String.valueOf(item.getQuantity()), normalFont));
                 table.addCell(new Phrase(String.format("Rs. %.2f", item.getUnitPrice()), normalFont));
                 table.addCell(new Phrase(String.format("Rs. %.2f", item.getSubtotal()), normalFont));
@@ -85,7 +86,7 @@ public class PDFGenerator {
 
             // Total
             PdfPCell totalLabelCell = new PdfPCell(new Phrase("Total", tableHeaderFont));
-            totalLabelCell.setColspan(3);
+            totalLabelCell.setColspan(4);
             totalLabelCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             totalLabelCell.setBackgroundColor(new Color(245, 245, 245));
             table.addCell(totalLabelCell);
